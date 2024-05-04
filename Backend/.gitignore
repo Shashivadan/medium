@@ -9,4 +9,3 @@ yarn.lock
 pnpm-lock.yaml
 bun.lockb
 .env
-wrangler.toml

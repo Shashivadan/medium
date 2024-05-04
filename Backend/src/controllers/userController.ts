@@ -1,13 +1,6 @@
 import { Context } from "hono";
 import { sign } from "hono/jwt";
-import { PrismaClient } from '@prisma/client/edge'
-import { withAccelerate } from '@prisma/extension-accelerate'
-// import { prsima } from "../middlewares/prismaVar";
 
-// const prisma = new PrismaClient({
-//   datasourceUrl: env.DATABASE_URL,
-// }).$extends(withAccelerate())
-//
 type SignUpTypes = {
   username: string,
   password: string,
@@ -19,11 +12,13 @@ export async function signUp(c: Context) {
     const prisma = c.get("prisma")
     const { username, password, email }: SignUpTypes = await c.req.json()
 
+
     const isExists = await prisma.user.findFirst({
       where: {
         email
       }
     })
+
 
     if (isExists) {
       return c.json({ message: "user all ready exists" }, 402)
@@ -56,7 +51,6 @@ export async function signUp(c: Context) {
     }, 202)
 
   } catch (error) {
-    console.log(error);
     c.json({ message: "Interal Server Error" + error }, 500)
   }
 
@@ -91,6 +85,8 @@ export async function signIn(c: Context) {
       token
     }, 202)
   } catch (error) {
+    console.log(error);
+
     return c.json({ message: "Interal Server Error" + error }, 403)
   }
 }
