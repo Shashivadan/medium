@@ -1,17 +1,32 @@
 import { Context } from "hono";
 import { sign } from "hono/jwt";
+import { z } from "zod"
 
-type SignUpTypes = {
-  username: string,
-  password: string,
-  email: string,
-}
+
+
+const signUpSchema = z.object({
+  username: z.string().min(4),
+  password: z.string().min(4),
+  email: z.string().email()
+})
+
+type SignUpTypes = z.infer<typeof signUpSchema>
 
 export async function signUp(c: Context) {
   try {
     const prisma = c.get("prisma")
     const { username, password, email }: SignUpTypes = await c.req.json()
 
+
+    const { success } = signUpSchema.safeParse({
+      username,
+      password,
+      email
+    })
+
+    if (!success) {
+      return c.json({ message: "unaccpteable" }, 403)
+    }
 
     const isExists = await prisma.user.findFirst({
       where: {
@@ -55,17 +70,20 @@ export async function signUp(c: Context) {
   }
 
 }
-type SingInBodyType = {
-  email: string,
-  password: string
 
-}
+
+const signInSchema = signUpSchema.omit({ username: true })
+type SingInBodyType = z.infer<typeof signInSchema>
+
+
+
 
 export async function signIn(c: Context) {
   try {
     const prisma = c.get("prisma")
     const { email, password }: SingInBodyType = await c.req.json()
-
+    const { success } = signInSchema.safeParse({ email, password })
+    if (!success) return c.json({ message: "give valud schema" }, 403)
     const user = await prisma.user.findUnique({
       where: {
         email,

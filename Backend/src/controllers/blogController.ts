@@ -1,9 +1,12 @@
 import { Prisma } from "@prisma/client/edge";
 import { Context } from "hono";
-type TypeBlogPost = {
-  title: string,
-  content: string
-}
+import { z } from "zod";
+
+const blogSchema = z.object({
+  title: z.string().min(4),
+  content: z.string()
+})
+type TypeBlogPost = z.infer<typeof blogSchema>
 
 
 export async function blogPost(c: Context) {
@@ -12,7 +15,11 @@ export async function blogPost(c: Context) {
     const { title, content }: TypeBlogPost = await c.req.json()
     const userId: string = c.get("userId")
     if (!title || !content || !userId) return c.json({ messagae: "data is not provide", }, 403)
-
+    const { success } = blogSchema.safeParse({
+      title,
+      content
+    })
+    if (!success) return c.json({ message: "unacctpelable" }, 403)
     const newPost = await prisma.post.create({
       data: {
         title,
@@ -29,14 +36,14 @@ export async function blogPost(c: Context) {
     if (!newPost) {
       return c.json({ message: "Post Not Created" }, 403)
     }
-
     return c.json({ post: newPost }, 202)
   } catch (error: unknown) {
-    console.log(error);
     return c.json({ message: "Internal Server Error :" + error }, 500)
   }
 }
-type EditPostType = TypeBlogPost & { id: string }
+
+const editPostSchema = blogSchema.extend({ id: z.string() })
+type EditPostType = z.infer<typeof editPostSchema>
 
 
 export async function editPost(c: Context) {
@@ -46,6 +53,14 @@ export async function editPost(c: Context) {
 
     const { title, content, id }: EditPostType = await c.req.json()
     if (!title || !content || !id) return c.json({ message: "plase Provide Data" }, 403)
+
+    const { success } = editPostSchema.safeParse({
+      title,
+      content,
+      id
+    })
+
+    if (!success) return c.json({ message: "unacctpelable" }, 403)
     const updatePost = await prisma.post.update({
       where: {
         authorId: userId,
@@ -90,7 +105,6 @@ export async function getPostInBluk(c: Context) {
     const posts = await prisma.post.findMany({})
     return c.json({ posts })
   } catch (error: unknown) {
-
     return c.json({ message: "Internal Server Error" })
   }
 }
