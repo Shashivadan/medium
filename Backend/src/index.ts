@@ -8,11 +8,16 @@ const app = new Hono<{
   Bindings: {
     DATABASE_URL: string,
     JWT_SECRET: string
+  },
+  Varibles: {
+    userId: string
   }
 }>()
 
 app.use(cors())
 app.use("*", prisma)
+
+
 app.route("/api/v1/user", userRoutes)
 app.route("/api/v1", blogRoutes)
 
