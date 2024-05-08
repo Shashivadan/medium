@@ -5,6 +5,10 @@ import Blog from "./pages/Blog";
 import Background from "./components/Background";
 import Blogs from "./pages/Blogs";
 import WriteBlog from "./pages/WriteBlog";
+import axios from "axios";
+import BACKEND_URL from "../../Frontend/config";
+//@ts-ignore
+axios.defaults.baseURL = "http://localhost:8787";
 
 function App() {
   return (

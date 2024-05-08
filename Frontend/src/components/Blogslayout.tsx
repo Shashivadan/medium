@@ -2,21 +2,48 @@ import BlogProfile from "@/components/BlogProfile";
 import Bloglayout from "@/components/Bloglayout";
 import { Link } from "react-router-dom";
 
-export default function Blogslayout() {
+// authorId
+// :
+// "645f917e-7606-4c01-b5bf-4a4ef88e93c7"
+// content
+// :
+// "akdjlfa afjakjf akfjd flllajf dlfjladjlf djjdlfajjdfljal jafdhlka jalkfdhfl "
+// createdAt
+// :
+// "2024-05-04T16:24:38.055Z"
+// id
+// :
+// "1c3a1f0e-9246-48bb-8285-e1227a7fbbb2"
+// published
+// :
+// false
+// title
+// :
+// "new react version1"
+
+type PropType = {
+  id: string;
+  title: string;
+  content: string;
+  time: string;
+};
+
+export default function Blogslayout({ id, title, content, time }: PropType) {
   return (
     <>
-      <Link to="/blog/bkajflk">
+      <Link to={"/blog/" + id} key={id}>
         <div className=" bg-slate-100 p-3 rounded-2xl shadow-sm ">
           <div className=" mb-2 flex gap-2">
             {" "}
             <span>Auhter </span>
             <BlogProfile name={"shashi"} />
           </div>
-          <div className="">
+          <div key={id + "dd"}>
             <Bloglayout
-              title={"Lorem adfjak"}
-              posted="agt 12"
-              description="I've completed the registration for the conference next month. The event promises to be a great networking opportunity, and I'm looking forward to attending the various sessions and connecting with industry experts.              "
+              title={title}
+              posted={time}
+              description={content}
+              id={id}
             />
           </div>
         </div>

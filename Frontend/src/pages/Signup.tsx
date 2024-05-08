@@ -5,6 +5,8 @@ import SubmitButton from "@/components/SubmitButton";
 import { zodResolver } from "@hookform/resolvers/zod/src/zod.js";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import axios, { isAxiosError } from "axios";
+import { Link } from "react-router-dom";
 
 const SingupSchema = z.object({
   username: z.string().min(4),
@@ -23,8 +25,26 @@ export function Signup() {
     setError,
   } = useForm<FormFields>({ resolver: zodResolver(SingupSchema) });
 
-  const submitForm = handleSubmit((data) => {
-    console.log(data);
+  const submitForm = handleSubmit(async ({ email, password, username }) => {
+    try {
+      const response = await axios.post("/api/v1/user/signup", {
+        email,
+        password,
+        username,
+      });
+      const authData = response.data;
+      console.log(authData);
+    } catch (error: unknown) {
+      console.log(error);
+      if (isAxiosError(error)) {
+        if (error.response?.status == 400) {
+          return setError("root", {
+            message: "You already have an account, Signin",
+          });
+        }
+        return setError("root", { message: "Internal Server Error" });
+      }
+    }
   });
   return (
     <>
@@ -60,6 +80,15 @@ export function Signup() {
             <div className=" p-2">
               <SubmitButton name={"SignUp"} />
             </div>
+            {errors.root && (
+              <>
+                <div>
+                  <p className=" text-sm text-center  text-red-800">
+                    {errors.root.message}
+                  </p>
+                </div>
+              </>
+            )}
           </form>
         </div>
         <div className=" hidden  md:block">

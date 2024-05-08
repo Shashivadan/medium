@@ -5,7 +5,10 @@ import SubmitButton from "@/components/SubmitButton";
 
 import { zodResolver } from "@hookform/resolvers/zod/src/zod.js";
 import { useForm } from "react-hook-form";
+// import BACKEND_URL from "../../config";
 import z from "zod";
+import axios, { isAxiosError } from "axios";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 
 const signinSchema = z.object({
   email: z.string().min(1).email(),
@@ -15,6 +18,7 @@ const signinSchema = z.object({
 type FormFields = z.infer<typeof signinSchema>;
 
 export default function Signin() {
+  const navigator: NavigateFunction = useNavigate();
   const {
     register,
     reset,
@@ -23,8 +27,29 @@ export default function Signin() {
     setError,
   } = useForm<FormFields>({ resolver: zodResolver(signinSchema) });
 
-  const submitForm = handleSubmit((data) => {
-    console.log(data);
+  const submitForm = handleSubmit(async ({ email, password }) => {
+    try {
+      console.log(email, password);
+      const response = await axios.post("/api/v1/user/signin", {
+        email,
+        password,
+      });
+      const authData = response.data;
+      sessionStorage.setItem("auth_data", authData.token);
+      navigator("/blogs");
+
+      console.log(authData.token);
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        if (error.response?.status == 401) {
+          return setError("root", {
+            message: "email or password is wrong",
+          });
+        }
+        return setError("root", { message: "Internal Server Error" });
+      }
+      setError("root", { message: `Server Down` });
+    }
   });
   return (
     <>
@@ -53,6 +78,13 @@ export default function Signin() {
             <div className=" p-2">
               <SubmitButton name={"Signin"} />
             </div>
+            {errors.root && (
+              <>
+                <p className=" text-sm text-center  text-red-800">
+                  {errors.root.message}
+                </p>
+              </>
+            )}
           </form>
         </div>
         <div className="hidden md:block">
