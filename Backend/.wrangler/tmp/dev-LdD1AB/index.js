@@ -34,7 +34,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// .wrangler/tmp/bundle-hyiLNI/checked-fetch.js
+// .wrangler/tmp/bundle-pPWn5C/checked-fetch.js
 function checkURL(request, init) {
   const url = request instanceof URL ? request : new URL(
     (typeof request === "string" ? new Request(request, init) : request).url
@@ -52,7 +52,7 @@ function checkURL(request, init) {
 }
 var urls;
 var init_checked_fetch = __esm({
-  ".wrangler/tmp/bundle-hyiLNI/checked-fetch.js"() {
+  ".wrangler/tmp/bundle-pPWn5C/checked-fetch.js"() {
     "use strict";
     urls = /* @__PURE__ */ new Set();
     globalThis.fetch = new Proxy(globalThis.fetch, {
@@ -6475,11 +6475,11 @@ In case this error is unexpected for you, please report it in https://pris.ly/pr
   }
 });
 
-// .wrangler/tmp/bundle-hyiLNI/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-pPWn5C/middleware-loader.entry.ts
 init_checked_fetch();
 init_modules_watch_stub();
 
-// .wrangler/tmp/bundle-hyiLNI/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-pPWn5C/middleware-insertion-facade.js
 init_checked_fetch();
 init_modules_watch_stub();
 
@@ -12473,7 +12473,7 @@ async function signUp(c) {
       }
     });
     if (isExists) {
-      return c.json({ message: "user all ready exists" }, 402);
+      return c.json({ message: "user all ready exists" }, 400);
     }
     const newUser = await prisma2.user.create({
       data: {
@@ -12492,10 +12492,13 @@ async function signUp(c) {
     }
     const userId = newUser.id;
     const token = await sign2({ id: userId }, c.env.JWT_SECRET);
-    return c.json({
-      token,
-      user: newUser
-    }, 202);
+    return c.json(
+      {
+        token,
+        user: newUser
+      },
+      202
+    );
   } catch (error) {
     c.json({ message: "Interal Server Error" + error }, 500);
   }
@@ -12520,13 +12523,16 @@ async function signIn(c) {
       }
     });
     if (!user)
-      return c.json({ message: "email or password is wornge" }, 403);
+      return c.json({ message: "email or password is wornge" }, 401);
     const userId = user.id;
     const token = await sign2({ id: userId }, c.env.JWT_SECRET);
-    return c.json({
-      user,
-      token
-    }, 202);
+    return c.json(
+      {
+        user,
+        token
+      },
+      202
+    );
   } catch (error) {
     console.log(error);
     return c.json({ message: "Interal Server Error" + error }, 403);
@@ -12548,7 +12554,8 @@ init_checked_fetch();
 init_modules_watch_stub();
 async function authMiddlware(c, next) {
   try {
-    const token = c.req.header("token")?.split(" ")[1];
+    const token = c.req.header("token");
+    console.log(token);
     if (!token)
       return c.json({ message: "Token Is Not Provided" }, 403);
     const decode3 = await verify2(token, c.env.JWT_SECRET);
@@ -12590,10 +12597,13 @@ async function blogPost(c) {
         authorId: userId
       },
       select: {
-        title: true,
-        content: true,
-        authorId: true,
-        id: true
+        id: true,
+        user: {
+          select: {
+            username: true,
+            id: true
+          }
+        }
       }
     });
     if (!newPost) {
@@ -12604,7 +12614,7 @@ async function blogPost(c) {
     return c.json({ message: "Internal Server Error :" + error }, 500);
   }
 }
-var editPostSchema = blogSchema.extend({ id: z.string() });
+var editPostSchema = blogSchema.partial().extend({ id: z.string() });
 async function editPost(c) {
   try {
     const prisma2 = c.get("prisma");
@@ -12629,10 +12639,13 @@ async function editPost(c) {
         content
       },
       select: {
-        title: true,
-        content: true,
-        authorId: true,
-        id: true
+        id: true,
+        user: {
+          select: {
+            username: true,
+            id: true
+          }
+        }
       }
     });
     if (!updatePost)
@@ -12650,18 +12663,49 @@ async function getPostById(c) {
     const id = c.req.param("id");
     if (!id)
       return c.json({ message: "Provide Post Id" }, 403);
-    const post = await prisma2.post.findUnique({ where: { id } });
+    const post = await prisma2.post.findUnique({
+      where: { id },
+      select: {
+        title: true,
+        content: true,
+        id: true,
+        createdAt: true,
+        published: true,
+        user: {
+          select: {
+            username: true,
+            id: true
+          }
+        }
+      }
+    });
+    console.log(post);
     return c.json({ post }, 202);
   } catch (error) {
     if (error instanceof import_edge.Prisma.PrismaClientKnownRequestError)
       return c.json({ message: "Provide Current Id" }, 500);
-    return c.json({ message: "Internal Server Error" });
+    return c.json({ message: "Internal Server Error" }, 500);
   }
 }
 async function getPostInBluk(c) {
   try {
     const prisma2 = c.get("prisma");
-    const posts = await prisma2.post.findMany({});
+    const posts = await prisma2.post.findMany({
+      where: {},
+      select: {
+        title: true,
+        content: true,
+        id: true,
+        createdAt: true,
+        published: true,
+        user: {
+          select: {
+            username: true,
+            id: true
+          }
+        }
+      }
+    });
     return c.json({ posts });
   } catch (error) {
     return c.json({ message: "Internal Server Error" });
@@ -12970,7 +13014,7 @@ var jsonError = async (request, env, _ctx, middlewareCtx) => {
 };
 var middleware_miniflare3_json_error_default = jsonError;
 
-// .wrangler/tmp/bundle-hyiLNI/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-pPWn5C/middleware-insertion-facade.js
 src_default.middleware = [
   middleware_ensure_req_body_drained_default,
   middleware_miniflare3_json_error_default,
@@ -13002,7 +13046,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
   ]);
 }
 
-// .wrangler/tmp/bundle-hyiLNI/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-pPWn5C/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;
