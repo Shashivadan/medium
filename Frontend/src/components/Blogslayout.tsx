@@ -26,19 +26,26 @@ type PropType = {
   title: string;
   content: string;
   time: string;
+  username: string;
 };
 
-export default function Blogslayout({ id, title, content, time }: PropType) {
+export default function Blogslayout({
+  id,
+  title,
+  content,
+  time,
+  username,
+}: PropType) {
   return (
     <>
-      <Link to={"/blog/" + id} key={id}>
+      <Link to={"/blog/" + id}>
         <div className=" bg-slate-100 p-3 rounded-2xl shadow-sm ">
           <div className=" mb-2 flex gap-2">
             {" "}
             <span>Auhter </span>
-            <BlogProfile name={"shashi"} />
+            <BlogProfile name={username} />
           </div>
-          <div key={id + "dd"}>
+          <div>
             <Bloglayout
               title={title}
               posted={time}

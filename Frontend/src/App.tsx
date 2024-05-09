@@ -6,9 +6,12 @@ import Background from "./components/Background";
 import Blogs from "./pages/Blogs";
 import WriteBlog from "./pages/WriteBlog";
 import axios from "axios";
-import BACKEND_URL from "../../Frontend/config";
 //@ts-ignore
 axios.defaults.baseURL = "http://localhost:8787";
+
+if (window.sessionStorage.getItem("token")) {
+  axios.defaults.headers["token"] = window.sessionStorage.getItem("token");
+}
 
 function App() {
   return (

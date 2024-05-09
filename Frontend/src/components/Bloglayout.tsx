@@ -3,7 +3,7 @@ type PropTypes = {
   posted: string;
   description: string;
   condition?: boolean;
-  id: string;
+  id?: string;
 };
 
 function Bloglayout({ title, posted, description, condition, id }: PropTypes) {
@@ -12,7 +12,7 @@ function Bloglayout({ title, posted, description, condition, id }: PropTypes) {
       <div key={id + "q"}>
         <h1 className="text-2xl md:text-5xl font-bold">{title} </h1>
         <p className=" my-2 mb-3 text-sm text-slate-900 font-medium">
-          Posted on {posted}
+          Posted on {posted.slice(0, 10)}
         </p>
         <p className=" word-break: break-all font-serif ">
           {condition ? description : description.slice(0, 100) + "..."}

@@ -1,57 +1,27 @@
 import Blogslayout from "@/components/Blogslayout";
 import Breadcrumb from "@/components/Breadcrumb";
 import Navbar from "@/components/Navbar";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Progress } from "@/components/ui/progress";
-
-// authorId
-// :
-// "645f917e-7606-4c01-b5bf-4a4ef88e93c7"
-// content
-// :
-// "akdjlfa afjakjf akfjd flllajf dlfjladjlf djjdlfajjdfljal jafdhlka jalkfdhfl "
-// createdAt
-// :
-// "2024-05-04T16:24:38.055Z"
-// id
-// :
-// "1c3a1f0e-9246-48bb-8285-e1227a7fbbb2"
-// published
-// :
-// false
-// title
-// :
-// "new react version1"
+import Blogsloader from "@/components/Blogsloader";
+import useBlogsBluk from "@/hooks/useBlogsBluk";
 
 type DataType = {
-  authorId: string;
   content: string;
   id: string;
   published: string;
   title: string;
   createdAt: string;
+  user: {
+    username: string;
+    id: string;
+  };
 };
 
 function Blogs() {
-  const [progress, setProgress] = useState(22);
-  const [data, setData] = useState<DataType[] | null>();
-
-  useEffect(() => {
-    async function blogData() {
-      setProgress(0);
-      const responce = await axios.get("api/v1/blogs/bluk");
-      const result = await responce.data;
-      setData(result.posts);
-      setProgress(100);
-    }
-    blogData();
-  }, []);
+  const data = useBlogsBluk();
   return (
     <div>
       <div className="">
-        <Navbar name="Shree" />
+        <Navbar />
       </div>
       <div className="px-7 md:px-0">
         <div className="">
@@ -68,6 +38,7 @@ function Blogs() {
                       time={item.createdAt}
                       title={item.title}
                       content={item.content}
+                      username={item.user.username}
                     />
                   </div>
                 );
@@ -75,11 +46,8 @@ function Blogs() {
             </>
           ) : (
             <>
-              <div className="  bg-slate-700 p-2 flex items-center justify-center">
-                <Progress
-                  value={progress}
-                  className=" w-60 bg-white p-2 text-stone-900"
-                />
+              <div className="">
+                <Blogsloader />
               </div>
             </>
           )}

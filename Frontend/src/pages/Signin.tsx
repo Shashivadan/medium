@@ -36,9 +36,11 @@ export default function Signin() {
       });
       const authData = response.data;
       sessionStorage.setItem("auth_data", authData.token);
+      sessionStorage.setItem("auth_username", authData.user.username);
       navigator("/blogs");
+      reset();
 
-      console.log(authData.token);
+      console.log(authData);
     } catch (error: unknown) {
       if (isAxiosError(error)) {
         if (error.response?.status == 401) {

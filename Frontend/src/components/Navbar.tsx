@@ -1,17 +1,17 @@
 import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
-import { MouseEvent, MouseEventHandler } from "react";
+import { MouseEventHandler, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 type PropsTypes = {
-  name: string;
   condition?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
 };
 
-export default function Navbar({
-  name,
-  condition = false,
-  onClick,
-}: PropsTypes) {
+export default function Navbar({ condition = false, onClick }: PropsTypes) {
+  const [name, setname] = useState("");
+  useEffect(() => {
+    setname(JSON.stringify(sessionStorage.getItem("auth_username")));
+  }, []);
+
   return (
     <>
       <div className=" py-5 flex justify-between">
@@ -43,7 +43,7 @@ export default function Navbar({
             <div>
               <Avatar className={` bg-slate-300  p-2 rounded-full `}>
                 <AvatarFallback>
-                  {name.slice(0, 2).toUpperCase()}
+                  {name.slice(1, 3).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
             </div>

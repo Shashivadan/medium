@@ -1,24 +1,41 @@
 import AddSvg from "@/assets/svgs/AddSvg";
 import Breadcrumb from "@/components/Breadcrumb";
 import Navbar from "@/components/Navbar";
+import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function WriteBlog() {
   const [inputTitle, setIntputTitle] = useState<string>("");
   const [inputdesription, setIntputdesription] = useState<string>("");
+  const navigate = useNavigate();
+
+  async function handlePost() {
+    try {
+      const response = await axios.post(
+        "/api/v1/blog",
+        {
+          title: inputTitle,
+          content: inputdesription,
+        },
+        {
+          headers: {
+            token: sessionStorage.getItem("auth_data"),
+          },
+        }
+      );
+      if (response) {
+        return navigate("/blog/" + response?.data?.post.id);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <div>
       <div>
-        <Navbar
-          name="SHASHI"
-          condition={true}
-          onClick={() => {
-            console.log({ title: inputTitle, description: inputdesription });
-            setIntputdesription("");
-            setIntputTitle("");
-          }}
-        />
+        <Navbar condition={true} onClick={handlePost} />
       </div>
       <div>
         <Breadcrumb crumb="Write" />

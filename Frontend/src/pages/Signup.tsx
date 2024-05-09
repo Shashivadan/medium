@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod/src/zod.js";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import axios, { isAxiosError } from "axios";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const SingupSchema = z.object({
   username: z.string().min(4),
@@ -17,6 +17,7 @@ const SingupSchema = z.object({
 type FormFields = z.infer<typeof SingupSchema>;
 
 export function Signup() {
+  const navigator = useNavigate();
   const {
     register,
     reset,
@@ -33,7 +34,10 @@ export function Signup() {
         username,
       });
       const authData = response.data;
-      console.log(authData);
+      sessionStorage.setItem("auth_data", authData.token);
+      sessionStorage.setItem("auth_username", authData.user.username);
+      navigator("/blogs");
+      reset();
     } catch (error: unknown) {
       console.log(error);
       if (isAxiosError(error)) {
