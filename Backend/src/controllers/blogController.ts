@@ -96,7 +96,10 @@ export async function editPost(c: Context) {
 
 export async function getPostById(c: Context) {
   try {
-    const prisma = c.get("prisma");
+    const prisma = new PrismaClient({
+      datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+    // const prisma = c.get("prisma");
     const id: string = c.req.param("id");
     if (!id) return c.json({ message: "Provide Post Id" }, 403);
     const post = await prisma.post.findUnique({
@@ -115,8 +118,6 @@ export async function getPostById(c: Context) {
         },
       },
     });
-    console.log(post);
-
     return c.json({ post }, 202);
   } catch (error: unknown) {
     if (error instanceof Prisma.PrismaClientKnownRequestError)
