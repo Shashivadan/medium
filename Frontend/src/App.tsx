@@ -2,7 +2,6 @@ import { Routes, Route } from "react-router-dom";
 import { Signup } from "./pages/Signup";
 import Signin from "./pages/Signin";
 import Blog from "./pages/Blog";
-import Background from "./components/Background";
 import Blogs from "./pages/Blogs";
 import WriteBlog from "./pages/WriteBlog";
 import axios from "axios";

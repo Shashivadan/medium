@@ -9,7 +9,6 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import axios, { isAxiosError } from "axios";
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import Background from "@/components/Background";
 
 const signinSchema = z.object({
   email: z.string().min(1).email(),
