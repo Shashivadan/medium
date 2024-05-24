@@ -12,7 +12,7 @@ type PropsTypes = {
 export default function Navbar({ condition = false, onClick }: PropsTypes) {
   const [name, setname] = useState("");
   useEffect(() => {
-    setname(JSON.stringify(sessionStorage.getItem("auth_username")));
+    setname(JSON.stringify(localStorage.getItem("auth_username")));
   }, []);
 
   return (

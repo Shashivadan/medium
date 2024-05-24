@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import axios, { isAxiosError } from "axios";
 import { NavigateFunction, useNavigate } from "react-router-dom";
+import Background from "@/components/Background";
 
 const signinSchema = z.object({
   email: z.string().min(1).email(),
@@ -35,8 +36,8 @@ export default function Signin() {
         password,
       });
       const authData = response.data;
-      sessionStorage.setItem("auth_data", authData.token);
-      sessionStorage.setItem("auth_username", authData.user.username);
+      localStorage.setItem("auth_data", authData.token);
+      localStorage.setItem("auth_username", authData.user.username);
       navigator("/blogs");
       reset();
 
